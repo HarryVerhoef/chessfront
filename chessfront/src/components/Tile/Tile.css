@@ -1,0 +1,14 @@
+.tile {
+    display: flex;
+    width: 50px;
+    height: 50px;
+    cursor: grab;
+    align-items: center;
+    justify-content: center;
+}
+.tile.light {
+    background-color: white;
+}
+.tile.dark {
+    background-color: black;
+}
