@@ -4,6 +4,8 @@ import './Tile.css';
 
 const Tile = ({ rowNo, colNo }) => {
     const dispatch = useDispatch();
+    let tileClasses = [(rowNo & 1) === (colNo & 1) ? "dark" : "light"];
+    let pieceClasses = [];
     
     useEffect(() => {
         dispatch({ type: "chessfront/resetPiecesToStart" });
@@ -11,14 +13,27 @@ const Tile = ({ rowNo, colNo }) => {
 
     const colChar = String.fromCharCode(96 + colNo); // a=97 in ASCII
     const tileName = colChar + rowNo.toString();
-    const colouring = (rowNo & 1) === (colNo & 1) ? "dark" : "light";
 
     const tile = useSelector(state => state.tiles[tileName]);
+    if (tile.occupied) {
+        pieceClasses.push(`${tile.occupier}-${(tile.isWhite) ? "white" : "black"}`);
+    }
+    tileClasses.push(tile.highlighted ? "tile-highlighted" : "");
+
+    const highlightTile = (e) => {
+        dispatch({
+            type: "chessfront/toggleHighlightTile",
+            payload: {
+                tileName: tileName,
+            },
+        });
+        e.preventDefault();
+    };
 
     return (
-        <div className={`tile ${colouring}`}>
+        <div className={"tile " + tileClasses.join(" ")} onContextMenu={highlightTile}>
             {tile.occupied &&
-                <div className={`${tile.occupier}-${(tile.isWhite) ? "white" : "black"}`} alt="piece" />
+                <div className={"piece " + pieceClasses.join(" ")} alt="piece" />
             }
         </div>
     )

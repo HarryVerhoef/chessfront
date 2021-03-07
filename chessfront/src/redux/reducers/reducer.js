@@ -85,6 +85,18 @@ export default function appReducer(state = initialState, action) {
                 tiles: startingBoard.tiles,
             };
         }
+        case "chessfront/toggleHighlightTile": {
+            let newTilesState = state.tiles;
+            const isCurrentlyHighlighted = state.tiles[action.payload.tileName].highlighted;
+            newTilesState[action.payload.tileName] = {
+                ...newTilesState[action.payload.tileName],
+                highlighted: (isCurrentlyHighlighted) ? false : true,
+            };
+            return {
+                ...state,
+                tiles: newTilesState,
+            };
+        }
         // case "chessfront/movePiece": {
         //     return ParseMove(action.payload.move, state);
         // }

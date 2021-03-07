@@ -12,7 +12,10 @@
 .tile.dark {
     background-color: #759655;
 }
-.tile > div {
+.tile.tile-highlighted {
+    background-color: red !important;
+}
+.piece {
     width: 100%;
     height: 100%;
     background-size: contain;
