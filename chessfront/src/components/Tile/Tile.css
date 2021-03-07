@@ -10,5 +10,46 @@
     background-color: white;
 }
 .tile.dark {
-    background-color: black;
+    background-color: #759655;
+}
+.tile > div {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+}
+.bishop-black {
+    background-image: url("./img/bishop-black.svg");
+}
+.bishop-white {
+    background-image: url("./img/bishop-white.svg");
+}
+.king-black {
+    background-image: url("./img/king-black.svg");
+}
+.king-white {
+    background-image: url("./img/king-white.svg");
+}
+.knight-black {
+    background-image: url("./img/knight-black.svg");
+}
+.knight-white {
+    background-image: url("./img/knight-white.svg");
+}
+.pawn-black {
+    background-image: url("./img/pawn-black.svg");
+}
+.pawn-white {
+    background-image: url("./img/pawn-white.svg");
+}
+.queen-black {
+    background-image: url("./img/queen-black.svg");
+}
+.queen-white {
+    background-image: url("./img/queen-white.svg");
+}
+.rook-black {
+    background-image: url("./img/rook-black.svg");
+}
+.rook-white {
+    background-image: url("./img/rook-white.svg");
 }

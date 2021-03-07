@@ -1,5 +1,8 @@
+// import { ParseMove } from "./ParseMove";
+import startingBoard from "../presetBoards.js";
 const initialTileState = {
     occupied: false,
+    occupier: null,
 };
 
 const initialState = {
@@ -76,6 +79,15 @@ const initialState = {
 
 export default function appReducer(state = initialState, action) {
     switch(action.type) {
+        case "chessfront/resetPiecesToStart": {
+            return {
+                ...initialState,
+                tiles: startingBoard.tiles,
+            };
+        }
+        // case "chessfront/movePiece": {
+        //     return ParseMove(action.payload.move, state);
+        // }
         default:
             return state;
     };
