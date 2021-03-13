@@ -1,4 +1,5 @@
 import ChessGrid from './components/Grid';
+import MoveInput from './components/MoveInput'
 import './App.css';
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
     <div className="App">
       <body>
         <ChessGrid />
+        <MoveInput />
       </body>
     </div>
   );
