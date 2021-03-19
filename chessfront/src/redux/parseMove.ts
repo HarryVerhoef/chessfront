@@ -102,10 +102,12 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 tiles: moveHorizontal(state.tiles, 3, rookLoc),
             };
         }
-        // case equals(tokenStream, [TokenType.File, TokenType.Rank]): {
-        //     // pawn on file f advances to rank r
+        case equals(tokenStream, [TokenType.File, TokenType.Rank]): {
+            // pawn on file f advances to rank r
+            const file = lexedMove[0].value;
 
-        // }
+
+        }
         default: {
             console.log(lexedMove);
             throw new Error("Invalid move syntax");
