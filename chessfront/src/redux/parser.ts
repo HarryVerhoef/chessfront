@@ -1,21 +1,4 @@
-export enum TokenType {
-    File,
-    Rank,
-    Piece,
-    Captures,
-    EnPassant,
-    QueenSideCastle,
-    KingSideCastle,
-    Check,
-    Checkmate,
-
-    Invalid,
-};
-
-export type Token = {
-    tokenType: TokenType,
-    value: string | undefined,
-};
+import { TokenType, Token } from './types';
 
 function constructToken(tokenType: TokenType, value?: string): Token {
     return {
