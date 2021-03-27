@@ -90,13 +90,14 @@ const possibleDiagonalMoves = (position: position, brd: board): string[] => {
 }
 
 const possibleSquareMoves = (position: position, brd: board): string[] => {
+  console.log("POSSIBLE SQUARE MOVES");
   let moves: string[] = [];
   
-  for (let i: number = 1; i < 4; i++) {
+  for (let i: number = 1; i < 5; i++) {
     const increment: number = (i < 3) ? 1 : -1;
     let nextPosition: string = position;
     while (true) {
-      if (i & i) {
+      if (i & 1) {
         nextPosition = incrementAbsoluteRank(nextPosition, increment);
       } else {
         nextPosition = incrementAbsoluteFile(nextPosition, increment);

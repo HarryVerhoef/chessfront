@@ -31,12 +31,14 @@ const Tile = ({ rowNo, colNo }) => {
 
     const showPossibleMoves = () => {
         console.log("Showing possible moves...");
-        dispatch({
-            type: "chessfront/getPossibleMoves",
-            payload: {
-                tile: tileName,
-            },
-        });
+        if (tile.occupied) {
+            dispatch({
+                type: "chessfront/getPossibleMoves",
+                payload: {
+                    tile: tileName,
+                },
+            });
+        };
     };
 
     const hidePossibleMoves = () => {
