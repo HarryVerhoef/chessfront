@@ -34,12 +34,26 @@ const incrementRelativeRank = (board: board, position: string, n: number): strin
   return incrementAbsoluteRank(position, newIncrement);
 };
 
-const possibleKingMoves = (position: position, board: board) => {
-  /*
-  ** (1) Generate list of new positions
-  ** 
-  ** 
-  */
+const possibleKingMoves = (position: position, board: board): string[] => {
+  let potentialMoves: string[] = [];
+  let moves: string[] = [];
+
+  potentialMoves.push(incrementRelativeRank(board, position, 1)); // Up
+  potentialMoves.push(incrementRelativeFile(board, position, 1)); // Right
+  potentialMoves.push(incrementRelativeRank(board, position, -1)); // Down
+  potentialMoves.push(incrementRelativeFile(board, position, -1)); // Left
+  potentialMoves.push(incrementRelativeFile(board, potentialMoves[0], 1)); // Up and right
+  potentialMoves.push(incrementRelativeFile(board, potentialMoves[2], 1)); // Down and right
+  potentialMoves.push(incrementRelativeFile(board, potentialMoves[2], -1)); // Down and left
+  potentialMoves.push(incrementRelativeFile(board, potentialMoves[0], -1)); // Up and left
+
+  for (let i: number = 0; i < potentialMoves.length; i++) {
+    if (potentialMoves[i] !== "oob" && !board[potentialMoves[i]].occupied) {
+      moves.push(potentialMoves[i]);
+    };
+  };
+
+ return moves;
 };
 
 const possibleDiagonalMoves = (position: position, board: board): string[] => {
@@ -145,10 +159,10 @@ const possiblePawnMoves = (position: position, board: board) => {
     };
   };
   /* (3) 1 space above 1 space left/right if occupied by opponent piece */
-  if (isOpponentPiece(position, upAndLeft)) {
+  if (isOpponentPiece(board, position, upAndLeft)) {
     moves.push(upAndLeft);
   };
-  if (isOpponentPiece(position, upAndRight)) {
+  if (isOpponentPiece(board, position, upAndRight)) {
     moves.push(upAndRight);
   };
   
