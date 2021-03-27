@@ -91,8 +91,31 @@ const possibleQueenMoves = (position: position, board: board) => {
   return possibleSquareMoves(position, board).concat(possibleDiagonalMoves(position, board));
 };
 
-const possibleKnightMoves = (position: position, board: board) => {
-  //
+const possibleKnightMoves = (position: position, board: board): string[] => {
+  let moves: string[] = [];
+  
+  const directlyAbove: string = incrementRelativeRank(board, position, 3);
+  const directlyBelow: string = incrementRelativeRank(board, position, -3);
+  const directlyLeft: string = incrementRelativeFile(board, position, -3);
+  const directlyRight: string = incrementRelativeFile(board, position, 3);
+
+  let potentialMoves: string[] = [];
+  potentialMoves.push(incrementRelativeFile(board, directlyAbove, -1));//up left
+  potentialMoves.push(incrementRelativeFile(board, directlyAbove, 1));//up right
+  potentialMoves.push(incrementRelativeFile(board, directlyBelow, -1));//down left
+  potentialMoves.push(incrementRelativeFile(board, directlyBelow, 1));//down right
+  potentialMoves.push(incrementRelativeRank(board, directlyLeft, 1));//left up
+  potentialMoves.push(incrementRelativeRank(board, directlyLeft, -1));//left down
+  potentialMoves.push(incrementRelativeRank(board, directlyRight, 1));//right up
+  potentialMoves.push(incrementRelativeRank(board, directlyRight, -1));//right down
+
+  for(let i: number = 0; i < potentialMoves.length; i++){
+    if (potentialMoves[i] !== 'oob' && !board[potentialMoves[i]].occupied){
+      moves.push(potentialMoves[i])
+    }
+  }
+
+  return moves;
 };
 
 const possiblePawnMoves = (position: position, board: board) => {

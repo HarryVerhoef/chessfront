@@ -6,7 +6,7 @@ const MoveInput = () => {
 
     const inputRef = useRef(null);
 
-    const makeMove = (e) => {
+    const makeMove = () => {
         console.log(inputRef.current.value);
         dispatch({
             type: "chessfront/movePiece",
@@ -14,14 +14,13 @@ const MoveInput = () => {
                 move: inputRef.current.value,
             },
         });
-        e.preventDefault();
     };
 
     return (
-        <form action="#" onSubmit={(e) => makeMove(e)}>
+        <div>
             <input type="text" ref={inputRef}/>
-            <input type="submit" value="Submit"/>
-        </form>
+            <button onClick={()=>makeMove()}>Submit</button>
+        </div>
     );
 };
 
