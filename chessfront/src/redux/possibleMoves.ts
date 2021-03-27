@@ -4,8 +4,11 @@ import {
   board,
 } from './types';
 
-const isOpponentPiece = (board: board, firstPiece: string, secondPiece: string): boolean => {
-  return board[firstPiece].occupied && board[secondPiece].occupied && (board[firstPiece].isWhite !== board[secondPiece].isWhite);
+const isOpponentPiece = (brd: board, firstPiece: string, secondPiece: string): boolean => {
+  if (secondPiece === "oob") {
+    return false;
+  }
+  return brd[firstPiece].occupied && brd[secondPiece].occupied && (brd[firstPiece].isWhite !== brd[secondPiece].isWhite);
 };
 
 const incrementAbsoluteFile = (position: string, n: number): string => {
@@ -24,31 +27,37 @@ const incrementAbsoluteRank = (position: string, n: number): string => {
   return position.charAt(0) + newRank.toString();
 };
 
-const incrementRelativeFile = (board: board, position: string, n: number): string => {
-  const newIncrement: number = (board[position].isWhite) ? n : -n;
+const incrementRelativeFile = (brd: board, position: string, n: number): string => {
+  if (position === "oob") {
+    return "oob";
+  };
+  const newIncrement: number = (brd[position].isWhite) ? n : -n;
   return incrementAbsoluteFile(position, newIncrement);
 };
 
-const incrementRelativeRank = (board: board, position: string, n: number): string => {
-  const newIncrement: number = (board[position].isWhite) ? n : -n;
+const incrementRelativeRank = (brd: board, position: string, n: number): string => {
+  if (position === "oob") {
+    return "oob";
+  };
+  const newIncrement: number = (brd[position].isWhite) ? n : -n;
   return incrementAbsoluteRank(position, newIncrement);
 };
 
-const possibleKingMoves = (position: position, board: board): string[] => {
+const possibleKingMoves = (position: position, brd: board): string[] => {
   let potentialMoves: string[] = [];
   let moves: string[] = [];
 
-  potentialMoves.push(incrementRelativeRank(board, position, 1)); // Up
-  potentialMoves.push(incrementRelativeFile(board, position, 1)); // Right
-  potentialMoves.push(incrementRelativeRank(board, position, -1)); // Down
-  potentialMoves.push(incrementRelativeFile(board, position, -1)); // Left
-  potentialMoves.push(incrementRelativeFile(board, potentialMoves[0], 1)); // Up and right
-  potentialMoves.push(incrementRelativeFile(board, potentialMoves[2], 1)); // Down and right
-  potentialMoves.push(incrementRelativeFile(board, potentialMoves[2], -1)); // Down and left
-  potentialMoves.push(incrementRelativeFile(board, potentialMoves[0], -1)); // Up and left
+  potentialMoves.push(incrementRelativeRank(brd, position, 1)); // Up
+  potentialMoves.push(incrementRelativeFile(brd, position, 1)); // Right
+  potentialMoves.push(incrementRelativeRank(brd, position, -1)); // Down
+  potentialMoves.push(incrementRelativeFile(brd, position, -1)); // Left
+  potentialMoves.push(incrementRelativeFile(brd, potentialMoves[0], 1)); // Up and right
+  potentialMoves.push(incrementRelativeFile(brd, potentialMoves[2], 1)); // Down and right
+  potentialMoves.push(incrementRelativeFile(brd, potentialMoves[2], -1)); // Down and left
+  potentialMoves.push(incrementRelativeFile(brd, potentialMoves[0], -1)); // Up and left
 
   for (let i: number = 0; i < potentialMoves.length; i++) {
-    if (potentialMoves[i] !== "oob" && !board[potentialMoves[i]].occupied) {
+    if (potentialMoves[i] !== "oob" && !brd[potentialMoves[i]].occupied) {
       moves.push(potentialMoves[i]);
     };
   };
@@ -56,7 +65,7 @@ const possibleKingMoves = (position: position, board: board): string[] => {
  return moves;
 };
 
-const possibleDiagonalMoves = (position: position, board: board): string[] => {
+const possibleDiagonalMoves = (position: position, brd: board): string[] => {
   let moves: string[] = [];
 
   for (let i: number = 0; i < 4; i++) {
@@ -70,7 +79,7 @@ const possibleDiagonalMoves = (position: position, board: board): string[] => {
         nextPosition = incrementAbsoluteFile(nextPosition, increment);
         nextPosition = incrementAbsoluteRank(nextPosition, -increment);
       };
-      if (nextPosition === "oob" || board[nextPosition].occupied) {
+      if (nextPosition === "oob" || brd[nextPosition].occupied) {
         break;
       };
       moves.push(nextPosition);
@@ -80,7 +89,7 @@ const possibleDiagonalMoves = (position: position, board: board): string[] => {
   return moves;
 }
 
-const possibleSquareMoves = (position: position, board: board): string[] => {
+const possibleSquareMoves = (position: position, brd: board): string[] => {
   let moves: string[] = [];
   
   for (let i: number = 1; i < 4; i++) {
@@ -92,7 +101,7 @@ const possibleSquareMoves = (position: position, board: board): string[] => {
       } else {
         nextPosition = incrementAbsoluteFile(nextPosition, increment);
       }
-      if (nextPosition === "oob" || board[nextPosition].occupied) {
+      if (nextPosition === "oob" || brd[nextPosition].occupied) {
         break;
       }
       moves.push(nextPosition);
@@ -101,30 +110,30 @@ const possibleSquareMoves = (position: position, board: board): string[] => {
   return moves;
 }
 
-const possibleQueenMoves = (position: position, board: board) => {
-  return possibleSquareMoves(position, board).concat(possibleDiagonalMoves(position, board));
+const possibleQueenMoves = (position: position, brd: board) => {
+  return possibleSquareMoves(position, brd).concat(possibleDiagonalMoves(position, brd));
 };
 
-const possibleKnightMoves = (position: position, board: board): string[] => {
+const possibleKnightMoves = (position: position, brd: board): string[] => {
   let moves: string[] = [];
   
-  const directlyAbove: string = incrementRelativeRank(board, position, 3);
-  const directlyBelow: string = incrementRelativeRank(board, position, -3);
-  const directlyLeft: string = incrementRelativeFile(board, position, -3);
-  const directlyRight: string = incrementRelativeFile(board, position, 3);
+  const directlyAbove: string = incrementRelativeRank(brd, position, 2);
+  const directlyBelow: string = incrementRelativeRank(brd, position, -2);
+  const directlyLeft: string = incrementRelativeFile(brd, position, -2);
+  const directlyRight: string = incrementRelativeFile(brd, position, 2);
 
   let potentialMoves: string[] = [];
-  potentialMoves.push(incrementRelativeFile(board, directlyAbove, -1));//up left
-  potentialMoves.push(incrementRelativeFile(board, directlyAbove, 1));//up right
-  potentialMoves.push(incrementRelativeFile(board, directlyBelow, -1));//down left
-  potentialMoves.push(incrementRelativeFile(board, directlyBelow, 1));//down right
-  potentialMoves.push(incrementRelativeRank(board, directlyLeft, 1));//left up
-  potentialMoves.push(incrementRelativeRank(board, directlyLeft, -1));//left down
-  potentialMoves.push(incrementRelativeRank(board, directlyRight, 1));//right up
-  potentialMoves.push(incrementRelativeRank(board, directlyRight, -1));//right down
+  potentialMoves.push(incrementRelativeFile(brd, directlyAbove, -1));//up left
+  potentialMoves.push(incrementRelativeFile(brd, directlyAbove, 1));//up right
+  potentialMoves.push(incrementRelativeFile(brd, directlyBelow, -1));//down left
+  potentialMoves.push(incrementRelativeFile(brd, directlyBelow, 1));//down right
+  potentialMoves.push(incrementRelativeRank(brd, directlyLeft, 1));//left up
+  potentialMoves.push(incrementRelativeRank(brd, directlyLeft, -1));//left down
+  potentialMoves.push(incrementRelativeRank(brd, directlyRight, 1));//right up
+  potentialMoves.push(incrementRelativeRank(brd, directlyRight, -1));//right down
 
   for(let i: number = 0; i < potentialMoves.length; i++){
-    if (potentialMoves[i] !== 'oob' && !board[potentialMoves[i]].occupied){
+    if (potentialMoves[i] !== 'oob' && !brd[potentialMoves[i]].occupied){
       moves.push(potentialMoves[i])
     }
   }
@@ -132,7 +141,7 @@ const possibleKnightMoves = (position: position, board: board): string[] => {
   return moves;
 };
 
-const possiblePawnMoves = (position: position, board: board) => {
+const possiblePawnMoves = (position: position, brd: board) => {
   let moves: string[] = [];
 
   /*
@@ -141,28 +150,28 @@ const possiblePawnMoves = (position: position, board: board) => {
   ** 3. 1 space above 1 space left/right if occupied by opponent piece
   */
 
-  const directlyAbove: string = incrementRelativeRank(board, position, 1);
-  const upAndLeft: string = incrementRelativeFile(board, directlyAbove, -1);
-  const upAndRight: string = incrementRelativeFile(board, directlyAbove, 1);
+  const directlyAbove: string = incrementRelativeRank(brd, position, 1);
+  const upAndLeft: string = incrementRelativeFile(brd, directlyAbove, -1);
+  const upAndRight: string = incrementRelativeFile(brd, directlyAbove, 1);
 
   /* (1) 1 space above if unoccupied */
-  if (!board[directlyAbove].occupied) {
+  if (!brd[directlyAbove].occupied) {
     moves.push(directlyAbove)
   }
   /* (2) 2 spaces above if unoccipied and 1 space above is unoccupied and hasn't been moved already */
-  if ((board[position].isWhite && position[1] === "2") || (!board[position].isWhite && position[1] === "7")) {
-    if (!board[directlyAbove].occupied) {
-      const twoSpacesAbove: string = incrementRelativeRank(board, position, 2);
-      if (!board[directlyAbove].occupied) {
+  if ((brd[position].isWhite && position[1] === "2") || (!brd[position].isWhite && position[1] === "7")) {
+    if (!brd[directlyAbove].occupied) {
+      const twoSpacesAbove: string = incrementRelativeRank(brd, position, 2);
+      if (!brd[directlyAbove].occupied) {
         moves.push(twoSpacesAbove);
       };
     };
   };
   /* (3) 1 space above 1 space left/right if occupied by opponent piece */
-  if (isOpponentPiece(board, position, upAndLeft)) {
+  if (isOpponentPiece(brd, position, upAndLeft)) {
     moves.push(upAndLeft);
   };
-  if (isOpponentPiece(board, position, upAndRight)) {
+  if (isOpponentPiece(brd, position, upAndRight)) {
     moves.push(upAndRight);
   };
   
@@ -170,22 +179,25 @@ const possiblePawnMoves = (position: position, board: board) => {
 };
 
 
-export const possibleMoves = (position: position, board: board): string[] => {
-  switch (board[position].occupier) {
+const possibleMoves = (position: position, brd: board): string[] => {
+  console.log(brd);
+  switch (brd[position].occupier) {
     case "king":
-      return possibleKingMoves(position, board);
+      return possibleKingMoves(position, brd);
     case "queen":
-      return possibleQueenMoves(position, board);
+      return possibleQueenMoves(position, brd);
     case "rook":
-      return possibleSquareMoves(position, board);
+      return possibleSquareMoves(position, brd);
     case "bishop":
-      return possibleDiagonalMoves(position, board);
+      return possibleDiagonalMoves(position, brd);
     case "knight":
-      return possibleKnightMoves(position, board);
+      return possibleKnightMoves(position, brd);
     case "pawn":
-      return possiblePawnMoves(position, board);
+      return possiblePawnMoves(position, brd);
     default: {
       return [];
     }
   }
-}
+};
+
+export default possibleMoves;

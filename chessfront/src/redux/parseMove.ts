@@ -1,7 +1,7 @@
-import { TokenType } from './types';
+import { TokenType, board, position } from './types';
 import { lexer } from "./parser";
 
-function isValidMove(board: object, newLoc: string, isWhitesMove: boolean) {
+function isValidMove(brd: object, newLoc: string, isWhitesMove: boolean) {
     /*
     ** (1) Check new location is between files a and h
     ** (2) Check new location is between ranks 1 and 8
@@ -29,7 +29,7 @@ const emptyTile = {
 };
 
 
-function moveHorizontal(board: board, x: number, pieceName: position) {
+function moveHorizontal(brd: board, x: number, pieceName: position) {
     // Files: a-h <==> 97-104
 
     const rank = pieceName[1];
@@ -37,11 +37,11 @@ function moveHorizontal(board: board, x: number, pieceName: position) {
     const newFileASCII = initialFileASCII + x;
     const newLoc = String.fromCharCode(newFileASCII) + rank; 
 
-    if (isValidMove(board, newLoc, true)) {
-        board[newLoc] = board[pieceName];
-        board[pieceName] = emptyTile;
+    if (isValidMove(brd, newLoc, true)) {
+        brd[newLoc] = brd[pieceName];
+        brd[pieceName] = emptyTile;
         
-        return board;
+        return brd;
     };
     return {};
 };

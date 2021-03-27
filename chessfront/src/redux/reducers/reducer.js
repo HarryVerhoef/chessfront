@@ -1,4 +1,5 @@
 import parseMove from "../parseMove.ts";
+import possibleMoves from "../possibleMoves.ts";
 import startingBoard from "../presetBoards.js";
 const initialTileState = {
     occupied: false,
@@ -6,6 +7,7 @@ const initialTileState = {
 };
 
 const initialState = {
+    possibleMoves: [],
     previousMoveStartTile: null,
     previousMoveEndTile: null,
     highlitedTile: null,
@@ -100,6 +102,24 @@ export default function appReducer(state = initialState, action) {
         case "chessfront/movePiece": {
             console.log(`Making move: ${action.payload.move}`)
             return parseMove(state, action.payload.move, true);
+        }
+        case "chessfront/getPossibleMoves": {
+            console.log(`Getting possible moves for tile: ${action.payload.tile}`);
+            let newTilesState = state.tiles;
+            const pm = possibleMoves(action.payload.tile, state.tiles);
+            console.log(`Possible moves: ${pm}`);
+            console.log(newTilesState);
+            return {
+                ...state,
+                possibleMoves: pm,
+            };
+        }
+        case "chessfront/hidePossibleMoves": {
+            console.log("Hiding possible moves in reducer...");
+            return {
+                ...state,
+                possibleMoves: [],
+            };
         }
         default:
             return state;
