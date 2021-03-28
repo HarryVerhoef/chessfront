@@ -10,6 +10,13 @@ const isOpponentPiece = (brd: board, firstPiece: string, secondPiece: string): b
   return brd[firstPiece].occupied && brd[secondPiece].occupied && (brd[firstPiece].isWhite !== brd[secondPiece].isWhite);
 };
 
+const isOpponentPieceOrUnoccupied = (brd: board, firstPos: string, secondPos: string): boolean => {
+  if (firstPos === "oob" || secondPos === "oob") {
+    return false;
+  }
+  return !brd[secondPos].occupied || isOpponentPiece(brd, firstPos, secondPos);
+};
+
 const incrementAbsoluteFile = (position: string, n: number): string => {
   const newFile: number = position.charCodeAt(0) + n;
   if (position === "oob" || newFile < 97 || newFile > 104) {
@@ -56,7 +63,7 @@ const possibleKingMoves = (position: string, brd: board): string[] => {
   potentialMoves.push(incrementRelativeFile(brd, potentialMoves[0], -1)); // Up and left
 
   for (let i: number = 0; i < potentialMoves.length; i++) {
-    if (potentialMoves[i] !== "oob" && !brd[potentialMoves[i]].occupied) {
+    if (potentialMoves[i] !== "oob" && isOpponentPieceOrUnoccupied(brd, position, potentialMoves[i])) {
       moves.push(potentialMoves[i]);
     };
   };
@@ -78,9 +85,14 @@ const possibleDiagonalMoves = (position: string, brd: board): string[] => {
         nextPosition = incrementAbsoluteFile(nextPosition, increment);
         nextPosition = incrementAbsoluteRank(nextPosition, -increment);
       };
-      if (nextPosition === "oob" || brd[nextPosition].occupied) {
+      if (nextPosition === "oob") {
         break;
-      };
+      } else if (brd[nextPosition].occupied) {
+        if (isOpponentPiece(brd, position, nextPosition)) {
+          moves.push(nextPosition);
+        }
+        break;
+      }
       moves.push(nextPosition);
     }
   }
@@ -101,7 +113,12 @@ const possibleSquareMoves = (position: string, brd: board): string[] => {
       } else {
         nextPosition = incrementAbsoluteFile(nextPosition, increment);
       }
-      if (nextPosition === "oob" || brd[nextPosition].occupied) {
+      if (nextPosition === "oob") {
+        break;
+      } else if (brd[nextPosition].occupied) {
+        if (isOpponentPiece(brd, position, nextPosition)) {
+          moves.push(nextPosition);
+        }
         break;
       }
       moves.push(nextPosition);
@@ -133,7 +150,7 @@ const possibleKnightMoves = (position: string, brd: board): string[] => {
   potentialMoves.push(incrementRelativeRank(brd, directlyRight, -1));//right down
 
   for(let i: number = 0; i < potentialMoves.length; i++){
-    if (potentialMoves[i] !== 'oob' && !brd[potentialMoves[i]].occupied){
+    if (potentialMoves[i] !== 'oob' && isOpponentPieceOrUnoccupied(brd, position, potentialMoves[i])) {
       moves.push(potentialMoves[i])
     }
   }
@@ -158,11 +175,11 @@ const possiblePawnMoves = (position: string, brd: board) => {
   if (!brd[directlyAbove].occupied) {
     moves.push(directlyAbove)
   }
-  /* (2) 2 spaces above if unoccipied and 1 space above is unoccupied and hasn't been moved already */
+  /* (2) 2 spaces above if unoccupied and 1 space above is unoccupied and hasn't been moved already */
   if ((brd[position].isWhite && position[1] === "2") || (!brd[position].isWhite && position[1] === "7")) {
     if (!brd[directlyAbove].occupied) {
       const twoSpacesAbove: string = incrementRelativeRank(brd, position, 2);
-      if (!brd[directlyAbove].occupied) {
+      if (!brd[twoSpacesAbove].occupied) {
         moves.push(twoSpacesAbove);
       };
     };
