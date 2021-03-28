@@ -12,7 +12,7 @@ const isOpponentPiece = (brd: board, firstPiece: string, secondPiece: string): b
 
 const incrementAbsoluteFile = (position: string, n: number): string => {
   const newFile: number = position.charCodeAt(0) + n;
-  if (newFile < 97 || newFile > 104) {
+  if (position === "oob" || newFile < 97 || newFile > 104) {
     return "oob";
   }
   return String.fromCharCode(newFile) + position.charAt(1);
@@ -20,7 +20,7 @@ const incrementAbsoluteFile = (position: string, n: number): string => {
 
 const incrementAbsoluteRank = (position: string, n: number): string => {
   const newRank: number = parseInt(position.charAt(1)) + n;
-  if (newRank < 1 || newRank > 8) {
+  if (position === "oob" || newRank < 1 || newRank > 8) {
     return "oob"; // Out of bounds
   }
   return position.charAt(0) + newRank.toString();
@@ -67,7 +67,7 @@ const possibleKingMoves = (position: string, brd: board): string[] => {
 const possibleDiagonalMoves = (position: string, brd: board): string[] => {
   let moves: string[] = [];
 
-  for (let i: number = 0; i < 4; i++) {
+  for (let i: number = 1; i < 5; i++) {
     const increment: number = (i < 3) ? 1 : -1;
     let nextPosition: string = position;
     while (true) {
