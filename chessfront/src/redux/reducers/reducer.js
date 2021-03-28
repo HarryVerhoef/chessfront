@@ -11,6 +11,7 @@ const initialState = {
     previousMoveStartTile: null,
     previousMoveEndTile: null,
     highlitedTile: null,
+    isWhitesTurn: true,
     tiles: {
         a1: initialTileState,
         a2: initialTileState,
@@ -100,8 +101,12 @@ export default function appReducer(state = initialState, action) {
             };
         }
         case "chessfront/movePiece": {
-            console.log(`Making move: ${action.payload.move}`)
-            return parseMove(state, action.payload.move, true);
+            console.log(`Making move: ${action.payload.move}`);
+
+            return {
+                ...parseMove(state, action.payload.move, true),
+                isWhitesTurn: !state.isWhitesTurn,
+            };
         }
         case "chessfront/getPossibleMoves": {
             console.log(`Getting possible moves for tile: ${action.payload.tile}`);

@@ -1,25 +1,6 @@
 import { TokenType, board, position } from './types';
 import { lexer } from "./parser";
-
-function isValidMove(brd: object, newLoc: string, isWhitesMove: boolean) {
-    /*
-    ** (1) Check new location is between files a and h
-    ** (2) Check new location is between ranks 1 and 8
-    ** (3) Check move does not concede a check
-    */
-
-    const newFileASCII = newLoc[0].charCodeAt(0);
-    const newRank = parseInt(newLoc[1]);
-    console.log(`New location: ${newLoc}`);
-
-    if (newFileASCII < 97 || newFileASCII > 104) {
-        throw new Error("Invalid horizontal location: file out of bounds");
-    } else if (newRank < 1 || newRank > 8) {
-        throw new Error("Invalid vertical location: rank out of bounds");
-    };
-
-    return true;
-};
+import possibleMoves from "./possibleMoves";
 
 
 const emptyTile = {
@@ -28,6 +9,12 @@ const emptyTile = {
     isWhite: false,
 };
 
+const movePiece = (brd: board, initialPos: string, newPos: string): board => {
+    const newBoard = { ...brd };
+    newBoard[initialPos] = emptyTile;
+    newBoard[newPos] = brd[initialPos]
+    return newBoard;
+};
 
 function moveHorizontal(brd: board, x: number, pieceName: position) {
     // Files: a-h <==> 97-104
@@ -37,13 +24,10 @@ function moveHorizontal(brd: board, x: number, pieceName: position) {
     const newFileASCII = initialFileASCII + x;
     const newLoc = String.fromCharCode(newFileASCII) + rank; 
 
-    if (isValidMove(brd, newLoc, true)) {
-        brd[newLoc] = brd[pieceName];
-        brd[pieceName] = emptyTile;
-        
-        return brd;
-    };
-    return {};
+    brd[newLoc] = brd[pieceName];
+    brd[pieceName] = emptyTile;
+    
+    return brd;
 };
 
 function equals(stream: TokenType[], syntax: TokenType[]): boolean {
@@ -85,11 +69,26 @@ function parseMove(state: any, move: string, isWhite: boolean) {
             };
         }
         case equals(tokenStream, [TokenType.File, TokenType.Rank]): {
-            // pawn on file f advances to rank r
-            const file = lexedMove[0].value;
-            
+            const file = lexedMove[0].value + "";
+            const rank = parseInt(lexedMove[1].value + "");
+            const newPos = file + rank.toString();
+            const oneBelow = file + (rank - 1).toString();
+            const twoBelow = file + (rank - 2).toString();
 
-
+            if (state.tiles[oneBelow].occupier === "pawn" && possibleMoves(oneBelow, state.tiles).includes(newPos)) {
+                return {
+                    ...state,
+                    tiles: movePiece(state.tiles, oneBelow, newPos),
+                };
+            } else if (state.tiles[twoBelow].occupier === "pawn" && possibleMoves(twoBelow, state.tiles).includes(newPos)) {
+                return {
+                    ...state,
+                    tiles: movePiece(state.tiles, twoBelow, newPos),
+                };
+            };
+            return {
+                ...state
+            };
         }
         default: {
             console.log(lexedMove);

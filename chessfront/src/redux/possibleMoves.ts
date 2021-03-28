@@ -1,6 +1,5 @@
 /* eslint-disable no-cond-assign */
 import {
-  position,
   board,
 } from './types';
 
@@ -43,7 +42,7 @@ const incrementRelativeRank = (brd: board, position: string, n: number): string 
   return incrementAbsoluteRank(position, newIncrement);
 };
 
-const possibleKingMoves = (position: position, brd: board): string[] => {
+const possibleKingMoves = (position: string, brd: board): string[] => {
   let potentialMoves: string[] = [];
   let moves: string[] = [];
 
@@ -65,7 +64,7 @@ const possibleKingMoves = (position: position, brd: board): string[] => {
  return moves;
 };
 
-const possibleDiagonalMoves = (position: position, brd: board): string[] => {
+const possibleDiagonalMoves = (position: string, brd: board): string[] => {
   let moves: string[] = [];
 
   for (let i: number = 0; i < 4; i++) {
@@ -89,7 +88,7 @@ const possibleDiagonalMoves = (position: position, brd: board): string[] => {
   return moves;
 }
 
-const possibleSquareMoves = (position: position, brd: board): string[] => {
+const possibleSquareMoves = (position: string, brd: board): string[] => {
   console.log("POSSIBLE SQUARE MOVES");
   let moves: string[] = [];
   
@@ -111,11 +110,11 @@ const possibleSquareMoves = (position: position, brd: board): string[] => {
   return moves;
 }
 
-const possibleQueenMoves = (position: position, brd: board) => {
+const possibleQueenMoves = (position: string, brd: board) => {
   return possibleSquareMoves(position, brd).concat(possibleDiagonalMoves(position, brd));
 };
 
-const possibleKnightMoves = (position: position, brd: board): string[] => {
+const possibleKnightMoves = (position: string, brd: board): string[] => {
   let moves: string[] = [];
   
   const directlyAbove: string = incrementRelativeRank(brd, position, 2);
@@ -142,7 +141,7 @@ const possibleKnightMoves = (position: position, brd: board): string[] => {
   return moves;
 };
 
-const possiblePawnMoves = (position: position, brd: board) => {
+const possiblePawnMoves = (position: string, brd: board) => {
   let moves: string[] = [];
 
   /*
@@ -180,7 +179,7 @@ const possiblePawnMoves = (position: position, brd: board) => {
 };
 
 
-const possibleMoves = (position: position, brd: board): string[] => {
+const possibleMoves = (position: string, brd: board): string[] => {
   console.log(brd);
   switch (brd[position].occupier) {
     case "king":
