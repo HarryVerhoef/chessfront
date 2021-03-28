@@ -104,7 +104,7 @@ export default function appReducer(state = initialState, action) {
             console.log(`Making move: ${action.payload.move}`);
 
             return {
-                ...parseMove(state, action.payload.move, true),
+                ...parseMove(state, action.payload.move, state.isWhitesTurn),
                 isWhitesTurn: !state.isWhitesTurn,
             };
         }

@@ -49,6 +49,8 @@ function parseMove(state: any, move: string, isWhite: boolean) {
     const lexedMove = lexer(move);
     const tokenStream = lexedMove.map(({ tokenType }) => tokenType);
 
+    console.log(`is Whites turn: ${isWhite}`);
+
     switch(true) {
         case equals(tokenStream, [TokenType.QueenSideCastle]): {
             const kingLoc = isWhite ? "e1" : "e8";
@@ -72,18 +74,22 @@ function parseMove(state: any, move: string, isWhite: boolean) {
             const file = lexedMove[0].value + "";
             const rank = parseInt(lexedMove[1].value + "");
             const newPos = file + rank.toString();
-            const oneBelow = file + (rank - 1).toString();
-            const twoBelow = file + (rank - 2).toString();
+            const oneBelow = file + (isWhite ? rank - 1 : rank + 1).toString();
+            const twoBelow = file + (isWhite ? rank - 2 : rank + 2).toString();
 
-            if (state.tiles[oneBelow].occupier === "pawn" && possibleMoves(oneBelow, state.tiles).includes(newPos)) {
-                return {
-                    ...state,
-                    tiles: movePiece(state.tiles, oneBelow, newPos),
+            if (state.tiles[oneBelow].occupier === "pawn" && state.tiles[oneBelow].isWhite === isWhite) {
+                if (possibleMoves(oneBelow, state.tiles).includes(newPos)) {
+                    return {
+                        ...state,
+                        tiles: movePiece(state.tiles, oneBelow, newPos),
+                    };
                 };
-            } else if (state.tiles[twoBelow].occupier === "pawn" && possibleMoves(twoBelow, state.tiles).includes(newPos)) {
-                return {
-                    ...state,
-                    tiles: movePiece(state.tiles, twoBelow, newPos),
+            } else if (state.tiles[twoBelow].occupier === "pawn" && state.tiles[twoBelow].isWhite === isWhite) {
+                if (possibleMoves(twoBelow, state.tiles).includes(newPos)) {
+                    return {
+                        ...state,
+                        tiles: movePiece(state.tiles, twoBelow, newPos),
+                    };
                 };
             };
             return {
