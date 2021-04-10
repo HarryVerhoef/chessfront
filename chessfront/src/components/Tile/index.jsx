@@ -15,9 +15,6 @@ const Tile = ({ rowNo, colNo }) => {
         dispatch({ type: "chessfront/resetPiecesToStart" });
     }, [dispatch]);
 
-    
-
-    
     if (tile.occupied) {
         pieceClasses.push(`${tile.occupier}-${(tile.isWhite) ? "white" : "black"}`);
     }

@@ -1,6 +1,7 @@
 import { TokenType, board, position } from './types';
 import { lexer } from "./parser";
 import possibleMoves from "./possibleMoves";
+import possibleAttackers from "./possibleAttackers";
 
 
 const emptyTile = {
@@ -70,7 +71,7 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 tiles: moveHorizontal(state.tiles, 3, rookLoc),
             };
         }
-        case equals(tokenStream, [TokenType.File, TokenType.Rank]): {
+        case equals(tokenStream, [TokenType.File, TokenType.Rank]): { // Simple pawn moves: e4, c5, etc
             const file = lexedMove[0].value + "";
             const rank = parseInt(lexedMove[1].value + "");
             const newPos = file + rank.toString();
@@ -96,10 +97,26 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 ...state
             };
         }
-        default: {
+        case equals(tokenStream, [TokenType.Piece, TokenType.File, TokenType.Rank]): { // Simple non-pawn moves: Nf3, Bc5, etc
+            const piece = lexedMove[0].value + "";
+            const file = lexedMove[1].value + "";
+            const rank = lexedMove[2].value + "";
+            const newPos = file + rank;
+            let possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
+            console.log(possibles);
+            if (possibles.length === 1) {
+                return {
+                    ...state,
+                    tiles: movePiece(state.tiles, possibles[0], newPos),
+                };
+            };
+            return {
+                ...state
+            };
+        }
+        default:
             console.log(lexedMove);
             throw new Error("Invalid move syntax");
-        }
     };
 };
 

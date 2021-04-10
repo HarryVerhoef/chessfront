@@ -10,14 +10,14 @@ const isOpponentPiece = (brd: board, firstPiece: string, secondPiece: string): b
   return brd[firstPiece].occupied && brd[secondPiece].occupied && (brd[firstPiece].isWhite !== brd[secondPiece].isWhite);
 };
 
-const isOpponentPieceOrUnoccupied = (brd: board, firstPos: string, secondPos: string): boolean => {
+export const isOpponentPieceOrUnoccupied = (brd: board, firstPos: string, secondPos: string): boolean => {
   if (firstPos === "oob" || secondPos === "oob") {
     return false;
   }
   return !brd[secondPos].occupied || isOpponentPiece(brd, firstPos, secondPos);
 };
 
-const incrementAbsoluteFile = (position: string, n: number): string => {
+export const incrementAbsoluteFile = (position: string, n: number): string => {
   const newFile: number = position.charCodeAt(0) + n;
   if (position === "oob" || newFile < 97 || newFile > 104) {
     return "oob";
@@ -25,7 +25,7 @@ const incrementAbsoluteFile = (position: string, n: number): string => {
   return String.fromCharCode(newFile) + position.charAt(1);
 };
 
-const incrementAbsoluteRank = (position: string, n: number): string => {
+export const incrementAbsoluteRank = (position: string, n: number): string => {
   const newRank: number = parseInt(position.charAt(1)) + n;
   if (position === "oob" || newRank < 1 || newRank > 8) {
     return "oob"; // Out of bounds
@@ -33,7 +33,7 @@ const incrementAbsoluteRank = (position: string, n: number): string => {
   return position.charAt(0) + newRank.toString();
 };
 
-const incrementRelativeFile = (brd: board, position: string, n: number): string => {
+export const incrementRelativeFile = (brd: board, position: string, n: number): string => {
   if (position === "oob") {
     return "oob";
   };
@@ -41,7 +41,7 @@ const incrementRelativeFile = (brd: board, position: string, n: number): string 
   return incrementAbsoluteFile(position, newIncrement);
 };
 
-const incrementRelativeRank = (brd: board, position: string, n: number): string => {
+export const incrementRelativeRank = (brd: board, position: string, n: number): string => {
   if (position === "oob") {
     return "oob";
   };
@@ -101,7 +101,6 @@ const possibleDiagonalMoves = (position: string, brd: board): string[] => {
 }
 
 const possibleSquareMoves = (position: string, brd: board): string[] => {
-  console.log("POSSIBLE SQUARE MOVES");
   let moves: string[] = [];
   
   for (let i: number = 1; i < 5; i++) {
