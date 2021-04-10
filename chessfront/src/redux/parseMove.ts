@@ -102,12 +102,32 @@ function parseMove(state: any, move: string, isWhite: boolean) {
             const file = lexedMove[1].value + "";
             const rank = lexedMove[2].value + "";
             const newPos = file + rank;
-            let possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
-            console.log(possibles);
-            if (possibles.length === 1) {
-                return {
-                    ...state,
-                    tiles: movePiece(state.tiles, possibles[0], newPos),
+            if (!state.tiles[newPos].occupied) {
+                let possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
+                if (possibles.length === 1) {
+                    return {
+                        ...state,
+                        tiles: movePiece(state.tiles, possibles[0], newPos),
+                    };
+                };
+            };
+            return {
+                ...state
+            };
+        }
+        case equals(tokenStream, [TokenType.Piece, TokenType.Captures, TokenType.File, TokenType.Rank]): { // Simple piece captures: Bxf3 etc
+            const piece = lexedMove[0].value + "";
+            const file = lexedMove[2].value + "";
+            const rank = lexedMove[3].value + "";
+            const newPos = file + rank;
+            const capturedPiece = state.tiles[newPos];
+            if (capturedPiece.occupied && capturedPiece.isWhite !== isWhite) {
+                let possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
+                if (possibles.length === 1) {
+                    return {
+                        ...state,
+                        tiles: movePiece(state.tiles, possibles[0], newPos),
+                    };
                 };
             };
             return {
