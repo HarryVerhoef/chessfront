@@ -97,6 +97,23 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 ...state
             };
         }
+        case equals(tokenStream, [TokenType.File, TokenType.Captures, TokenType.File, TokenType.Rank]): { // Simple pawn captures: exd5 etc
+            const oldFile = lexedMove[0].value + "";
+            const newFile = lexedMove[2].value + "";
+            const newRank = lexedMove[3].value + "";
+            const oldRank = (parseInt(newRank) + (isWhite ? -1 : 1)).toString();
+            const oldPosition = oldFile + oldRank;
+            const newPosition = newFile + newRank;
+            if (state.tiles[newPosition].occupied && state.tiles[newPosition].isWhite !== isWhite) {
+                return {
+                    ...state,
+                    tiles: movePiece(state.tiles, oldPosition, newPosition),
+                };
+            }
+            return {
+                ...state,
+            };
+        }
         case equals(tokenStream, [TokenType.Piece, TokenType.File, TokenType.Rank]): { // Simple non-pawn moves: Nf3, Bc5, etc
             const piece = lexedMove[0].value + "";
             const file = lexedMove[1].value + "";

@@ -11,9 +11,11 @@ function App() {
     "Nf3",
     "Nc6",
     "Bb5",
+    "d5",
+    "exd5",
   ];
 
-  const timeStep = 1000;
+  const timeStep = 500; // Milliseconds
 
   return (
     <div className="App">
