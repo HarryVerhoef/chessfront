@@ -153,7 +153,7 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 ...state,
             };
         }
-        case equals(tokenStream, [TokenType.Piece, TokenType.Rank, TokenType.File, TokenType.Rank]): { // Ambiguous piece moves (rank): Rdf8 etc
+        case equals(tokenStream, [TokenType.Piece, TokenType.Rank, TokenType.File, TokenType.Rank]): { // Ambiguous piece moves (rank): R1f8 etc
             const piece = lexedMove[0].value + "";
             const disambiguatingRank = lexedMove[1].value + "";
             const newFile = lexedMove[2].value + "";
@@ -163,6 +163,29 @@ function parseMove(state: any, move: string, isWhite: boolean) {
                 const possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
                 for (let i = 0; i < possibles.length; i++) {
                     if (possibles[i].charAt(1) === disambiguatingRank) {
+                        return {
+                            ...state,
+                            tiles: movePiece(state.tiles, possibles[i], newPos),
+                        };
+                    };
+                };
+            };
+            return {
+                ...state,
+            };
+        }
+        case equals(tokenStream, [TokenType.Piece, TokenType.File, TokenType.Rank, TokenType.File, TokenType.Rank]): { // Ambiguous piece moves (pos): Ra2f8 etc
+            const piece = lexedMove[0].value + "";
+            const disambiguatingFile = lexedMove[1].value + "";
+            const disambiguatingRank = lexedMove[2].value + "";
+            const disambiguatingPos = disambiguatingFile + disambiguatingRank;
+            const newFile = lexedMove[3].value + "";
+            const newRank = lexedMove[4].value + "";
+            const newPos = newFile + newRank;
+            if (!state.tiles[newPos].occupied) {
+                const possibles = possibleAttackers(state.tiles, piece, newPos, isWhite);
+                for (let i = 0; i < possibles.length; i++) {
+                    if (possibles[i] === disambiguatingPos) {
                         return {
                             ...state,
                             tiles: movePiece(state.tiles, possibles[i], newPos),
