@@ -21,7 +21,7 @@ function App() {
     <div className="App">
       <body>
         <ChessGrid />
-        <MoveSequence sequence={ruyLopez} timeStep={timeStep}/>
+        {/* <MoveSequence sequence={ruyLopez} timeStep={timeStep}/> */}
         <MoveInput />
       </body>
     </div>
