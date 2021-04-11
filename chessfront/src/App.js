@@ -13,11 +13,13 @@ function App() {
     "Bb5",
   ];
 
+  const timeStep = 1000;
+
   return (
     <div className="App">
       <body>
         <ChessGrid />
-        <MoveSequence sequence={ruyLopez} />
+        <MoveSequence sequence={ruyLopez} timeStep={timeStep}/>
         <MoveInput />
       </body>
     </div>
