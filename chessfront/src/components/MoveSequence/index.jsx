@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 
-const movePiece = (sequence, dispatch, i) => {
-  
-};
-
 const MoveSequence = ({ sequence, timeStep }) => {
   const dispatch = useDispatch();
   useEffect(() => {
