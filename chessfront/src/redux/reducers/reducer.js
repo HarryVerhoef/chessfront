@@ -119,6 +119,13 @@ export default function appReducer(state = initialState, action) {
                 possibleMoves: pm,
             };
         }
+        case "chessfront/pickUpPiece": {
+            console.log(`Picking up piece: ${action.payload.tile}`);
+            /* djfnsdiunfg */
+            return {
+                ...state,
+            };
+        }
         case "chessfront/hidePossibleMoves": {
             console.log("Hiding possible moves in reducer...");
             return {

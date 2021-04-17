@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './Tile.css';
+import Piece from '../Piece';
 
 const Tile = ({ rowNo, colNo }) => {
     const colChar = String.fromCharCode(96 + colNo); // a=97 in ASCII
@@ -38,6 +39,36 @@ const Tile = ({ rowNo, colNo }) => {
         };
     };
 
+    const pickUpPiece = () => {
+        if (tile.occupied) {
+            dispatch({
+                type: "chessfront/pickUpPiece",
+                payload: {
+                    tile: tileName,
+                },
+            });
+        };
+    };
+
+    const handleDragEnter = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDragLeave = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    
+    const handleDragOver = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    const handleDrop = e => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
     const hidePossibleMoves = () => {
         console.log("Hiding possible moves...");
         dispatch({ type: "chessfront/hidePossibleMoves" });
@@ -54,9 +85,19 @@ const Tile = ({ rowNo, colNo }) => {
     };
 
     return (
-        <div className={"tile " + tileClasses.join(" ")} onMouseDown={showPossibleMoves} onMouseUp={hidePossibleMoves} onContextMenu={highlightTile}>
+        <div
+            draggable="true"
+            className={"tile " + tileClasses.join(" ")}
+            onMouseDown={showPossibleMoves}
+            onMouseUp={hidePossibleMoves}
+            onContextMenu={highlightTile}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+        >
             {tile.occupied &&
-                <div className={"piece " + pieceClasses.join(" ")} alt="piece" />
+                <Piece pieceType={tile.occupier} isWhite={tile.isWhite} />
             }
         </div>
     )
