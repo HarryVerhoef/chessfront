@@ -11,6 +11,8 @@ const initialState = {
     previousMoveStartTile: null,
     previousMoveEndTile: null,
     highlitedTile: null,
+    hoverTile: null,
+    isDragging: false,
     isWhitesTurn: true,
     tiles: {
         a1: initialTileState,
@@ -110,20 +112,28 @@ export default function appReducer(state = initialState, action) {
         }
         case "chessfront/getPossibleMoves": {
             console.log(`Getting possible moves for tile: ${action.payload.tile}`);
-            let newTilesState = state.tiles;
             const pm = possibleMoves(action.payload.tile, state.tiles);
             console.log(`Possible moves: ${pm}`);
-            console.log(newTilesState);
             return {
                 ...state,
                 possibleMoves: pm,
             };
         }
-        case "chessfront/pickUpPiece": {
-            console.log(`Picking up piece: ${action.payload.tile}`);
+        case "chessfront/tileHover": {
+            console.log("Activating tile hover classes...");
+            return {
+                ...state,
+                hoverTile: action.payload.tile,
+                isDragging: true,
+            };
+        }
+        case "chessfront/dropPiece": {
+            console.log(`Dropping piece: ${action.payload.tile}`);
             /* djfnsdiunfg */
             return {
                 ...state,
+                hoverTile: null,
+                isDragging: false,
             };
         }
         case "chessfront/hidePossibleMoves": {

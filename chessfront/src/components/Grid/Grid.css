@@ -1,0 +1,7 @@
+.container {
+  cursor: grab;
+}
+
+.container.dragging {
+  cursor: grabbing !important;
+}

@@ -5,7 +5,6 @@ import kingBlack from './img/king-black.svg';
 import kingWhite from './img/king-white.svg';
 import knightBlack from './img/knight-black.svg';
 import knightWhite from './img/knight-white.svg';
-
 import pawnBlack from './img/pawn-black.svg';
 import pawnWhite from './img/pawn-white.svg';
 import queenBlack from './img/queen-black.svg';
@@ -26,7 +25,14 @@ const constructPieceSrc = (pieceType, isWhite) => {
 };
 
 const Piece = ({ pieceType, isWhite }) => {
-  return <img className="piece" src={constructPieceSrc(pieceType, isWhite)} alt="piece" />;
+  return (
+    <img
+      className="piece"
+      src={constructPieceSrc(pieceType, isWhite)}
+      alt={pieceType}
+      draggable="true"
+    />
+  );
 };
 
 export default Piece;

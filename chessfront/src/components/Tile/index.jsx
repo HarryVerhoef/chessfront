@@ -26,6 +26,9 @@ const Tile = ({ rowNo, colNo }) => {
     if (board.possibleMoves.includes(tileName)) {
         tileClasses.push("isPossibleMove");
     };
+    if (board.hoverTile === tileName) {
+        tileClasses.push("is-dragging-over");
+    }
 
     const showPossibleMoves = () => {
         console.log("Showing possible moves...");
@@ -39,34 +42,34 @@ const Tile = ({ rowNo, colNo }) => {
         };
     };
 
-    const pickUpPiece = () => {
-        if (tile.occupied) {
-            dispatch({
-                type: "chessfront/pickUpPiece",
-                payload: {
-                    tile: tileName,
-                },
-            });
-        };
-    };
-
     const handleDragEnter = e => {
-        e.preventDefault();
         e.stopPropagation();
+        e.preventDefault();
+        dispatch({
+            type: "chessfront/tileHover",
+            payload: {
+                tile: tileName,
+            },
+        });
+        console.log("handleDragEnter");
     };
 
-    const handleDragLeave = e => {
-        e.preventDefault();
+    const cancelDragOver = e => {
         e.stopPropagation();
-    };
-    
-    const handleDragOver = e => {
         e.preventDefault();
-        e.stopPropagation();
     };
+
     const handleDrop = e => {
-        e.preventDefault();
         e.stopPropagation();
+        e.preventDefault();
+        hidePossibleMoves();
+        dispatch({
+            type: "chessfront/dropPiece",
+            payload: {
+                tile: tileName,
+            },
+        });
+        console.log("handleDrop");
     };
 
     const hidePossibleMoves = () => {
@@ -86,15 +89,13 @@ const Tile = ({ rowNo, colNo }) => {
 
     return (
         <div
-            draggable="true"
             className={"tile " + tileClasses.join(" ")}
             onMouseDown={showPossibleMoves}
             onMouseUp={hidePossibleMoves}
             onContextMenu={highlightTile}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
+            onDragOver={cancelDragOver}
             onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
         >
             {tile.occupied &&
                 <Piece pieceType={tile.occupier} isWhite={tile.isWhite} />

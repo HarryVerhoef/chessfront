@@ -2,7 +2,6 @@
     display: flex;
     width: 50px;
     height: 50px;
-    cursor: grab;
     align-items: center;
     justify-content: center;
 }
@@ -17,6 +16,10 @@
 }
 .tile.isPossibleMove {
     background-color: blue !important;
+}
+.tile.is-dragging-over {
+    background-color: green !important;
+    cursor: grabbing !important;
 }
 .piece {
     width: 100%;
