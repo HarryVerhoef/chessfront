@@ -24,13 +24,14 @@ const constructPieceSrc = (pieceType, isWhite) => {
   };
 };
 
-const Piece = ({ pieceType, isWhite }) => {
+const Piece = ({ onDragStart, pieceType, isWhite }) => {
   return (
     <img
       className="piece"
       src={constructPieceSrc(pieceType, isWhite)}
       alt={pieceType}
       draggable="true"
+      onDragStart={onDragStart}
     />
   );
 };

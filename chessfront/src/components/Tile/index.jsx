@@ -69,12 +69,15 @@ const Tile = ({ rowNo, colNo }) => {
                 tile: tileName,
             },
         });
+        dispatch({ type: "chessfront/hidePossibleMoves" });
         console.log("handleDrop");
     };
 
     const hidePossibleMoves = () => {
-        console.log("Hiding possible moves...");
-        dispatch({ type: "chessfront/hidePossibleMoves" });
+        if (!board.hoverTile) {
+            console.log("Hiding possible moves...");
+            dispatch({ type: "chessfront/hidePossibleMoves" });
+        }
     };
 
     const highlightTile = (e) => {
@@ -85,6 +88,16 @@ const Tile = ({ rowNo, colNo }) => {
             },
         });
         e.preventDefault();
+    };
+
+    const handleDragStart = () => {
+        console.log(`Drag started on tile: ${tileName}`);
+        dispatch({
+            type: "chessfront/dragStart",
+            payload: {
+                tileName: tileName,
+            },
+        });
     };
 
     return (
@@ -98,7 +111,7 @@ const Tile = ({ rowNo, colNo }) => {
             onDrop={handleDrop}
         >
             {tile.occupied &&
-                <Piece pieceType={tile.occupier} isWhite={tile.isWhite} />
+                <Piece pieceType={tile.occupier} isWhite={tile.isWhite} onDragStart={handleDragStart} />
             }
         </div>
     )

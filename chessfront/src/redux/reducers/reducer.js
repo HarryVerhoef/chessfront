@@ -1,9 +1,16 @@
 import parseMove from "../parseMove.ts";
 import possibleMoves from "../possibleMoves.ts";
 import startingBoard from "../presetBoards.js";
+
 const initialTileState = {
     occupied: false,
     occupier: null,
+};
+
+const emptyTile = {
+    occupied: false,
+    occupier: null,
+    isWhite: false,
 };
 
 const initialState = {
@@ -124,16 +131,38 @@ export default function appReducer(state = initialState, action) {
             return {
                 ...state,
                 hoverTile: action.payload.tile,
+            };
+        }
+        case "chessfront/dragStart": {
+            console.log(action.payload.tileName);
+            return {
+                ...state,
                 isDragging: true,
+                dragStartTile: action.payload.tileName,
             };
         }
         case "chessfront/dropPiece": {
             console.log(`Dropping piece: ${action.payload.tile}`);
-            /* djfnsdiunfg */
+            console.log(state.isWhitesTurn);
+            if ((state.isWhitesTurn === state.tiles[state.dragStartTile].isWhite) && state.possibleMoves.includes(action.payload.tile)) {
+                return {
+                    ...state,
+                    tiles: {
+                        ...state.tiles,
+                        [action.payload.tile]: state.tiles[state.dragStartTile],
+                        [state.dragStartTile]: emptyTile,
+                    },
+                    hoverTile: null,
+                    isDragging: false,
+                    dragStartTile: null,
+                    isWhitesTurn: !state.isWhitesTurn,
+                };
+            }
             return {
                 ...state,
                 hoverTile: null,
                 isDragging: false,
+                dragStartTile: null,
             };
         }
         case "chessfront/hidePossibleMoves": {
