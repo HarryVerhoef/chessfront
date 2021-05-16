@@ -9,7 +9,7 @@ import {
 } from './possibleMoves';
 
 const isOpponentPiece = (piece: string, brd: board, pos: string, isWhite: boolean): boolean => {
-  return brd[pos].occupier === piece && (brd[pos].isWhite === isWhite)
+  return brd[pos].occupier === piece && (brd[pos].isWhite !== isWhite)
 }
 
 const possibleKingAttackers = (brd: board, pos: string, isWhite: boolean): string[] => {

@@ -77,16 +77,17 @@ function parseMove(state: any, move: string, isWhite: boolean) {
             const newPos = file + rank.toString();
             const oneBelow = file + (isWhite ? rank - 1 : rank + 1).toString();
             const twoBelow = file + (isWhite ? rank - 2 : rank + 2).toString();
+            const kingPos = (isWhite) ? state.whiteKingPos : state.blackKingPos;
 
             if (state.tiles[oneBelow].occupier === "pawn" && state.tiles[oneBelow].isWhite === isWhite) {
-                if (possibleMoves(oneBelow, state.tiles).includes(newPos)) {
+                if (possibleMoves(oneBelow, state.tiles, kingPos, state.isWhitesTurn).includes(newPos)) {
                     return {
                         ...state,
                         tiles: movePiece(state.tiles, oneBelow, newPos),
                     };
                 };
             } else if (state.tiles[twoBelow].occupier === "pawn" && state.tiles[twoBelow].isWhite === isWhite) {
-                if (possibleMoves(twoBelow, state.tiles).includes(newPos)) {
+                if (possibleMoves(twoBelow, state.tiles, kingPos, state.isWhitesTurn).includes(newPos)) {
                     return {
                         ...state,
                         tiles: movePiece(state.tiles, twoBelow, newPos),

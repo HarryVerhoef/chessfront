@@ -14,7 +14,7 @@ export type tile = {
 };
 
 export type board = {
-    [ key in string ]: tile
+  [ key in string ]: tile
 };
 
 export enum TokenType {

@@ -1,6 +1,6 @@
 import parseMove from "../parseMove.ts";
 import possibleMoves from "../possibleMoves.ts";
-import startingBoard from "../presetBoards.js";
+import { startingBoard } from "../presetBoards.js";
 
 const initialTileState = {
     occupied: false,
@@ -21,6 +21,8 @@ const initialState = {
     hoverTile: null,
     isDragging: false,
     isWhitesTurn: true,
+    whiteKingPos: '',
+    blackKingPos: '',
     tiles: {
         a1: initialTileState,
         a2: initialTileState,
@@ -94,7 +96,15 @@ export default function appReducer(state = initialState, action) {
         case "chessfront/resetPiecesToStart": {
             return {
                 ...initialState,
+                whiteKingPos: 'e1',
+                blackKingPos: 'e8',
                 tiles: startingBoard.tiles,
+            };
+        }
+        case "chessfront/loadBoard": {
+            return {
+                ...state,
+                tiles: action.payload.board,
             };
         }
         case "chessfront/toggleHighlightTile": {
@@ -119,7 +129,8 @@ export default function appReducer(state = initialState, action) {
         }
         case "chessfront/getPossibleMoves": {
             console.log(`Getting possible moves for tile: ${action.payload.tile}`);
-            const pm = possibleMoves(action.payload.tile, state.tiles);
+            const kingPos = (state.isWhitesTurn) ? state.whiteKingPos : state.blackKingPos;
+            const pm = possibleMoves(action.payload.tile, state.tiles, kingPos, state.isWhitesTurn);
             console.log(`Possible moves: ${pm}`);
             return {
                 ...state,
@@ -142,9 +153,9 @@ export default function appReducer(state = initialState, action) {
             };
         }
         case "chessfront/dropPiece": {
-            console.log(`Dropping piece: ${action.payload.tile}`);
-            console.log(state.isWhitesTurn);
-            if ((state.isWhitesTurn === state.tiles[state.dragStartTile].isWhite) && state.possibleMoves.includes(action.payload.tile)) {
+            const isKing = (state.tiles[state.dragStartTile].occupier === "king");
+            const isWhite = (state.tiles[state.dragStartTile].isWhite);
+            if ((state.isWhitesTurn === isWhite) && state.possibleMoves.includes(action.payload.tile)) {
                 return {
                     ...state,
                     tiles: {
@@ -152,6 +163,8 @@ export default function appReducer(state = initialState, action) {
                         [action.payload.tile]: state.tiles[state.dragStartTile],
                         [state.dragStartTile]: emptyTile,
                     },
+                    whiteKingPos: (isKing && isWhite) ? action.payload.tile : state.whiteKingPos,
+                    blackKingPos: (isKing && !isWhite) ? action.payload.tile : state.blackKingPos,
                     hoverTile: null,
                     isDragging: false,
                     dragStartTile: null,

@@ -1,7 +1,9 @@
 /* eslint-disable no-cond-assign */
 import {
   board,
+  tile
 } from './types';
+import possibleAttackers from './possibleAttackers';
 
 const isOpponentPiece = (brd: board, firstPiece: string, secondPiece: string): boolean => {
   if (secondPiece === "oob") {
@@ -49,7 +51,50 @@ export const incrementRelativeRank = (brd: board, position: string, n: number): 
   return incrementAbsoluteRank(position, newIncrement);
 };
 
-const possibleKingMoves = (position: string, brd: board): string[] => {
+const isUnderAttack = (pos: string, brd: board): boolean => {
+  console.log('isUnderAttack called: ', pos);
+  const pieces = ["Q", "R", "B", "N"];
+
+  for (let i = 0; i < pieces.length; i++) {
+    if (possibleAttackers(brd, pieces[i], pos, brd[pos].isWhite).length) {
+      console.log('returned true');
+      console.log(possibleAttackers(brd, pieces[i], pos, brd[pos].isWhite));
+      return true;
+    };
+  }
+
+  console.log('returned false');
+  return false;
+};
+
+const moveArbitraryPiece = (oldPosition: string, newPosition: string, brd: board, isWhite: boolean): board => {
+  return {
+    ...brd,
+    [oldPosition]: {
+      occupied: false,
+      occupier: null,
+      isWhite: false,
+    },
+    [newPosition]: {
+      occupied: true,
+      occupier: null,
+      isWhite: isWhite,
+    }
+  }
+}
+
+const isUnderAttackAfterMove = (kingPos: string, oldPos: string, newPos: string, brd: board, isWhite: boolean): boolean => {
+  console.log('isUnderAttackAfterMove:\n')
+  console.log(`kingPos: ${kingPos}`);
+  console.log(`oldPos: ${oldPos}`);
+  console.log(`newPos: ${newPos}`);
+  console.log(`isWhite: ${isWhite}\n\n`);
+  const boardWithMove = moveArbitraryPiece(oldPos, newPos, brd, isWhite);
+  const underAttack = isUnderAttack(kingPos, boardWithMove);
+  return underAttack;
+}
+
+const possibleKingMoves = (position: string, brd: board, isWhite: boolean): string[] => {
   let potentialMoves: string[] = [];
   let moves: string[] = [];
 
@@ -71,7 +116,7 @@ const possibleKingMoves = (position: string, brd: board): string[] => {
  return moves;
 };
 
-const possibleDiagonalMoves = (position: string, brd: board): string[] => {
+const possibleDiagonalMoves = (position: string, brd: board, kingPos: string, isWhite: boolean): string[] => {
   let moves: string[] = [];
 
   for (let i: number = 1; i < 5; i++) {
@@ -88,19 +133,21 @@ const possibleDiagonalMoves = (position: string, brd: board): string[] => {
       if (nextPosition === "oob") {
         break;
       } else if (brd[nextPosition].occupied) {
-        if (isOpponentPiece(brd, position, nextPosition)) {
+        if (isOpponentPiece(brd, position, nextPosition) && !isUnderAttackAfterMove(kingPos, position, nextPosition, brd, isWhite)) {
           moves.push(nextPosition);
         }
         break;
       }
-      moves.push(nextPosition);
+      if (!isUnderAttackAfterMove(kingPos, position, nextPosition, brd, isWhite)) {
+        moves.push(nextPosition);
+      }
     }
   }
 
   return moves;
 }
 
-const possibleSquareMoves = (position: string, brd: board): string[] => {
+const possibleSquareMoves = (position: string, brd: board, kingPos: string, isWhite: boolean): string[] => {
   let moves: string[] = [];
   
   for (let i: number = 1; i < 5; i++) {
@@ -115,22 +162,24 @@ const possibleSquareMoves = (position: string, brd: board): string[] => {
       if (nextPosition === "oob") {
         break;
       } else if (brd[nextPosition].occupied) {
-        if (isOpponentPiece(brd, position, nextPosition)) {
+        if (isOpponentPiece(brd, position, nextPosition) && !isUnderAttackAfterMove(kingPos, position, nextPosition, brd, isWhite)) {
           moves.push(nextPosition);
         }
         break;
       }
-      moves.push(nextPosition);
+      if (!isUnderAttackAfterMove(kingPos, position, nextPosition, brd, isWhite)) {
+        moves.push(nextPosition);
+      }
     };
   }
   return moves;
 }
 
-const possibleQueenMoves = (position: string, brd: board) => {
-  return possibleSquareMoves(position, brd).concat(possibleDiagonalMoves(position, brd));
+const possibleQueenMoves = (position: string, brd: board, kingPos: string, isWhite: boolean) => {
+  return possibleSquareMoves(position, brd, kingPos, isWhite).concat(possibleDiagonalMoves(position, brd, kingPos, isWhite));
 };
 
-const possibleKnightMoves = (position: string, brd: board): string[] => {
+const possibleKnightMoves = (position: string, brd: board, kingPos: string, isWhite: boolean): string[] => {
   let moves: string[] = [];
   
   const directlyAbove: string = incrementRelativeRank(brd, position, 2);
@@ -150,14 +199,16 @@ const possibleKnightMoves = (position: string, brd: board): string[] => {
 
   for(let i: number = 0; i < potentialMoves.length; i++){
     if (potentialMoves[i] !== 'oob' && isOpponentPieceOrUnoccupied(brd, position, potentialMoves[i])) {
-      moves.push(potentialMoves[i])
+      if (!isUnderAttackAfterMove(kingPos, position, potentialMoves[i], brd, isWhite)) {
+        moves.push(potentialMoves[i]);
+      }
     }
   }
 
   return moves;
 };
 
-const possiblePawnMoves = (position: string, brd: board) => {
+const possiblePawnMoves = (position: string, brd: board, kingPos: string, isWhite: boolean) => {
   let moves: string[] = [];
 
   /*
@@ -171,45 +222,44 @@ const possiblePawnMoves = (position: string, brd: board) => {
   const upAndRight: string = incrementRelativeFile(brd, directlyAbove, 1);
 
   /* (1) 1 space above if unoccupied */
-  if (!brd[directlyAbove].occupied) {
+  if (!brd[directlyAbove].occupied && !isUnderAttackAfterMove(kingPos, position, directlyAbove, brd, isWhite)) {
     moves.push(directlyAbove)
   }
   /* (2) 2 spaces above if unoccupied and 1 space above is unoccupied and hasn't been moved already */
   if ((brd[position].isWhite && position[1] === "2") || (!brd[position].isWhite && position[1] === "7")) {
     if (!brd[directlyAbove].occupied) {
       const twoSpacesAbove: string = incrementRelativeRank(brd, position, 2);
-      if (!brd[twoSpacesAbove].occupied) {
+      if (!brd[twoSpacesAbove].occupied && !isUnderAttackAfterMove(kingPos, position, twoSpacesAbove, brd, isWhite)) {
         moves.push(twoSpacesAbove);
       };
     };
   };
   /* (3) 1 space above 1 space left/right if occupied by opponent piece */
-  if (isOpponentPiece(brd, position, upAndLeft)) {
+  if (isOpponentPiece(brd, position, upAndLeft) && !isUnderAttackAfterMove(kingPos, position, upAndLeft, brd, isWhite)) {
     moves.push(upAndLeft);
   };
-  if (isOpponentPiece(brd, position, upAndRight)) {
+  if (isOpponentPiece(brd, position, upAndRight) && !isUnderAttackAfterMove(kingPos, position, upAndRight, brd, isWhite)) {
     moves.push(upAndRight);
   };
   
   return moves;
 };
 
-
-const possibleMoves = (position: string, brd: board): string[] => {
+const possibleMoves = (position: string, brd: board, kingPos: string, isWhite: boolean): string[] => {
   console.log(brd);
   switch (brd[position].occupier) {
     case "king":
-      return possibleKingMoves(position, brd);
+      return possibleKingMoves(position, brd, isWhite);
     case "queen":
-      return possibleQueenMoves(position, brd);
+      return possibleQueenMoves(position, brd, kingPos, isWhite);
     case "rook":
-      return possibleSquareMoves(position, brd);
+      return possibleSquareMoves(position, brd, kingPos, isWhite);
     case "bishop":
-      return possibleDiagonalMoves(position, brd);
+      return possibleDiagonalMoves(position, brd, kingPos, isWhite);
     case "knight":
-      return possibleKnightMoves(position, brd);
+      return possibleKnightMoves(position, brd, kingPos, isWhite);
     case "pawn":
-      return possiblePawnMoves(position, brd);
+      return possiblePawnMoves(position, brd, kingPos, isWhite);
     default: {
       return [];
     }
